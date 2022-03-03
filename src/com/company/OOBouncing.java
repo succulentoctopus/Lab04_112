@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 
 import javax.swing.JPanel;
@@ -8,9 +8,55 @@ import java.awt.Graphics;
 import java.awt.Dimension;
 import java.util.Random;
 
+/*
+challenge implemented:
+shape[0] and shape[1] (sort of) behave like they have a spring attaching them together
+ */
+
 class Pair{
     //HACKED BY Pr0HaX0r
     //HAHAHAHA
+
+    double x;
+    double y;
+
+    public Pair(double initNum1, double initNum2) {
+        x = initNum1;
+        y = initNum2;
+    }
+
+    public Pair times(double val) {
+        Pair p = new Pair(this.x, this.y);
+        p.x *= val;
+        p.y *= val;
+        return p;
+    }
+
+    public Pair add(Pair initPair) {
+        this.x += initPair.x;
+        this.y += initPair.y;
+        return this;
+    }
+
+    public Pair flipX() {
+        this.x = -this.x;
+        return this;
+    }
+
+    public Pair flipY() {
+        this.y = -this.y;
+        return this;
+    }
+
+    public Pair divide(double val) {
+        Pair p = new Pair(this.x, this.y);
+        p.x /= val;
+        p.y /= val;
+        return p;
+    }
+
+
+
 }
 
 abstract class Shape{
@@ -78,6 +124,17 @@ abstract class Shape{
         if (bounced){
             velocity = velocity.divide(dampening);
         }
+
+
+    }
+
+    public boolean distApart(Shape shape) {
+        double distance = Math.sqrt(Math.pow((this.position.x - shape.position.x), 2) + Math.pow((this.position.y - shape.position.y), 2));
+
+        if (distance > 25 && distance < 300) {
+            return true;
+        }
+        return false;
     }
 }
 
@@ -133,11 +190,22 @@ class World{
     public void updateShapes(double time){
         for (int i = 0; i < numShapes; i ++)
         {
+            if (i == 1) {
+                if (shapes[i].distApart(shapes[i-1])) {
+                    shapes[i].velocity.flipX();
+                    //shapes[i].velocity.flipY();
+                    shapes[i-1].velocity.flipX();
+                    //shapes[i-1].velocity.flipY();
+                }
+            }
             shapes[i].update(this, time);
         }
     }
 
 }
+
+
+
 
 public class OOBouncing extends JPanel{
     public static final int WIDTH = 1024;
